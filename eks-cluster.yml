@@ -1,0 +1,39 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+
+metadata:
+  name: vmsl-dr
+  region: us-west-1
+
+
+vpc:
+  subnets:
+    private:
+      us-east-1b: { id: subnet-042e7c639dacfa6cd }
+      us-east-1a: { id: subnet-0ffa2534f8082cf10 }
+    
+
+cloudWatch:
+  clusterLogging:
+    enableTypes: ["*"]   
+
+
+managedNodeGroups:
+  - name: vmsl-dr
+    volumeType: gp2
+    amiFamily: AmazonLinux2
+    minSize: 1
+    maxSize: 2
+    desiredCapacity: 2
+    volumeSize: 10
+    volumeEncrypted: true
+    instanceType: t3.medium
+  
+    tags:
+      nodegroup-role: worker  
+      Environment: dr 
+    iam:
+      withAddonPolicies:
+        externalDNS: true
+        certManager: true
